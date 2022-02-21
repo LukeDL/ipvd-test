@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=db
+    adminer:
+      image: adminer
+      restart: always
+      ports:
+        - "8080:8080"
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile-api
+    restart: always
+    depends_on:
+      - db
+    container_name: api
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile-web
+    restart: always
+    depends_on:
+      - api
+    container_name: web
