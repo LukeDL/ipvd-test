@@ -7,16 +7,20 @@
     "start": "node api.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "author": "LukeDL",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^3.9.2",
+    "bcrypt": "^5.0.1",
     "dotenv": "^16.0.0",
     "pg": "^8.7.3",
-    "pg-hstore": "^2.3.4",
-    "sequelize": "^6.16.2"
+    "pg-hstore": "^2.3.4"
   },
+  "type": "module",
   "devDependencies": {
-    "sequelize-cli": "^6.4.1"
-  },
-  "type": "module"
+    "prisma": "^3.9.2"
+  }
 }

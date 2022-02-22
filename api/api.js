@@ -3,17 +3,6 @@ import http from "http";
 import User from "./routes/users.js";
 
 const routes = {
-  /*users: '',
-    departments: '',
-    costCenter: '', */
-  /*"/helloworld": (res, url) => {
-    res.write(`Hello World on: ${url}`);
-    return res.end();
-  },
-  "/test": (res, url) => {
-    res.write(`Test on: ${url}`);
-    res.end();
-  },*/
   "/users/": User,
 };
 
@@ -49,13 +38,21 @@ const httpServerFactory = () => {
     console.log("routes:", state.observer);
   };
 
-  const notifyAll = (url, req, res) => {
+  const notifyAll = async (url, req, res) => {
     console.log(`notifing ${state.observer.length} routes`);
     const result = [];
     for (const observer of state.observer) {
-      result.push(observer(url, req, res));
+      console.log("observer:", observer);
+      result.push(await observer(url, req, res));
     }
-    if (result.every(element => element === null)) {
+
+    /**
+    console.log("result:", result);
+    console.log('result.every:',result.every(element => element === null))
+    console.log('result.length:',result.length)
+    */
+
+    if (result.every(element => element === false)) {
       res.writeHead(404);
       res.end();
     }
@@ -68,9 +65,13 @@ const httpServerFactory = () => {
   };
 };
 
+/**
+ * Create a server, subscribe to the routes and start listening
+ */
+
 const server = httpServerFactory();
 server.subscribeRoutes(routes);
-server.showRoutes();
+// server.showRoutes();
 server.createServer();
 
-console.log("server:", server);
+// console.log("server:", server);
