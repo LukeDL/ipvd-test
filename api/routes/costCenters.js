@@ -1,30 +1,43 @@
-import UsersControllers from "../controllers/users.js";
+import CostCentersControllers from "../controllers/costCenters.js";
 import utils from "../utils.js";
 
 const concat = utils().concatChunkData;
 
-const User = async (url, req, res) => {
+const CostCenter = async (url, req, res) => {
   const routes = [
-    { route: "/", method: "GET", controller: UsersControllers.controllerTest },
-    { route: "/login", method: "POST", controller: UsersControllers.login },
     {
-      route: "/protected",
-      method: "POST",
-      controller: UsersControllers.protected,
+      route: "/getCostCenter",
+      method: "GET",
+      controller: CostCentersControllers.getCostCenter,
       protected: true,
     },
     {
-      route: "/getUser", method: "GET", controller: UsersControllers.getUser, protected: true,  
-    }
+      route: "/createCostCenter",
+      method: "POST",
+      controller: CostCentersControllers.createCostCenter,
+      protected: true,
+    },
+    {
+      route: "/updateCostCenter",
+      method: "PUT",
+      controller: CostCentersControllers.updateCostCenter,
+      protected: true,
+    },
+    {
+      route: "/deleteCostCenter",
+      method: "DELETE",
+      controller: CostCentersControllers.deleteCostCenter,
+      protected: true,
+    },
   ];
 
-  function splitUrl(url, delimiter) {
+  const splitUrl = (url, delimiter) => {
     return url.split(delimiter);
-  }
+  };
 
-  const urlString = splitUrl(url, "/users");
+  const urlString = splitUrl(url, "/costCenters");
 
-  async function checkUrlAndExecute(url) {
+  const checkUrlAndExecute = async (url) => {
     /**
      * checks if the url is valid on a list of routes if not return
      */
@@ -42,16 +55,13 @@ const User = async (url, req, res) => {
             const cookies = utils().parseCookies(req);
             const data = await concat(req);
 
-            route.controller({ cookies, data }, res);
-            
+            route.controller({ cookies, ...data }, res);
           } else {
             const data = await concat(req);
             route.controller(data, res);
-            
           }
 
           return true;
-
         }
       }
     }
@@ -59,21 +69,15 @@ const User = async (url, req, res) => {
     // console.log('no route')
 
     return false;
-  }
+  };
 
-  if (url.search("/users") !== -1) {
+  if (url.search("/costCenters") !== -1) {
     if (await checkUrlAndExecute(urlString[1])) {
       return true;
     } else {
       return false;
     }
-  } else {
-    return false;
   }
-
-  /* return {
-    User,
-  }; */
 };
 
-export default User;
+export default CostCenter;

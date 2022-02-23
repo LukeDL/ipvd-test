@@ -5,27 +5,39 @@ const { PrismaClient } = Prisma;
 const prisma = new PrismaClient();
 
 async function main() {
-  /** create test user */
-
-	bcrypt.hash("test", 10, async (err, hash) => {
-
-    const user = await prisma.Users.create({
-    data: {
-      firstName: "Testivaldo",
-      lastName: "Testingson",
-      email: "test@test.com",
-      password: hash,
-    },
+  await bcrypt.hash("!Q2w3e4r", 10, async (err, hash) => {
+    const costCenter = await prisma.CostCenters.upsert({
+      where: {
+        code: "CC1",
+      },
+      update: {},
+      create: {
+        code: "CC1",
+        name: "Cost Center 1",
+        departaments: {
+          create: [
+            {
+              name: "Administration",
+              users: {
+                create: [
+                  {
+                    firstName: "Administrator",
+                    lastName: "of the System",
+                    email: "mail@system.com",
+                    password: hash,
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
     });
-
   });
-
-
-
 }
 
 main()
   .catch((e) => console.error(e))
   .finally(async () => {
-	await prisma.$disconnect();
+    await prisma.$disconnect();
   });

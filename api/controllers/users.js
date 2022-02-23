@@ -97,6 +97,247 @@ const UsersControllers = {
       res.end();
     }
   },
+
+  createUser: (responseData, res) => {
+    /***
+     * Use utils.checkSession to check if the user is logged in
+     * and if the user is logged in, then create a new user
+     */
+
+    if (utils().checkSession(responseData.cookies)) {
+      const { PrismaClient } = Prisma;
+      const prisma = new PrismaClient();
+
+      const { email, password } = responseData.data;
+
+      async function main() {
+        const user = await prisma.Users.findFirst({
+          where: {
+            email,
+          },
+        });
+
+        if (!user) {
+          const hashedPassword = await bcrypt.hash(password, 10);
+
+          const newUser = await prisma.Users.create({
+            data: {
+              email,
+              password: hashedPassword,
+            },
+          });
+
+          res.write(
+            JSON.stringify({
+              user: newUser,
+            })
+          );
+          res.end();
+        } else {
+          res.write(
+            JSON.stringify({
+              error: "User already exists",
+            })
+          );
+          res.end();
+        }
+      }
+
+      main()
+        .catch((e) => console.error(e))
+        .finally(async () => {
+          await prisma.$disconnect();
+        });
+      return;
+    }
+    res.writeHead(401);
+    res.write(
+      JSON.stringify({
+        error: "Invalid session",
+      })
+    );
+    res.end();
+  },
+
+  getUser: (responseData, res) => {
+    /**
+     * Use utils.checkSession to check if the user is logged in
+     * and if the user is logged in, then get the user
+     */
+
+    if (utils().checkSession(responseData.cookies)) {
+      const { PrismaClient } = Prisma;
+      const prisma = new PrismaClient();
+
+      const { uuid } = responseData.data;
+
+      async function main() {
+        const user = await prisma.Users.findFirst({
+          where: {
+            uuid,
+          },
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+            createdAt: true,
+            updatedAt: true,
+            departament: {
+              select: {
+                id: true,
+                name: true,
+                costCenter: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        res.write(
+          JSON.stringify({
+            user,
+          })
+        );
+        res.end();
+      }
+
+      main()
+        .catch((e) => console.error(e))
+        .finally(async () => {
+          await prisma.$disconnect();
+        });
+      return;
+    }
+    res.writeHead(401);
+    res.write(
+      JSON.stringify({
+        error: "Invalid session",
+      })
+    );
+    res.end();
+  },
+
+  updateUser: (responseData, res) => {
+    /**
+     * Use utils.checkSession to check if the user is logged in
+     * and if the user is logged in, then update the user with the
+     * json fields that are passed in the request
+     */
+
+    if (utils().checkSession(responseData.cookies)) {
+      const { PrismaClient } = Prisma;
+      const prisma = new PrismaClient();
+
+      const { uuid, ...data } = responseData.data;
+
+      async function main() {
+        const user = await prisma.Users.findFirst({
+          where: {
+            uuid,
+          },
+        });
+
+        if (user) {
+          const updatedUser = await prisma.Users.update({
+            where: {
+              uuid,
+            },
+            data,
+          });
+
+          res.write(
+            JSON.stringify({
+              user: updatedUser,
+            })
+          );
+          res.end();
+        } else {
+          res.write(
+            JSON.stringify({
+              error: "User does not exist",
+            })
+          );
+          res.end();
+        }
+      }
+
+      main()
+        .catch((e) => console.error(e))
+        .finally(async () => {
+          await prisma.$disconnect();
+        });
+      return;
+    }
+    res.writeHead(401);
+    res.write(
+      JSON.stringify({
+        error: "Invalid session",
+      })
+    );
+    res.end();
+  },
+
+  deleteUser: (responseData, res) => {
+    /**
+     * Use utils.checkSession to check if the user is logged in
+     * and if the user is logged in, then delete the user
+     */
+
+    if (utils().checkSession(responseData.cookies)) {
+      const { PrismaClient } = Prisma;
+      const prisma = new PrismaClient();
+
+      const { uuid } = responseData.data;
+
+      async function main() {
+        const user = await prisma.Users.findFirst({
+          where: {
+            uuid,
+          },
+        });
+
+        if (user) {
+          const deletedUser = await prisma.Users.delete({
+            where: {
+              uuid,
+            },
+          });
+
+          res.write(
+            JSON.stringify({
+              user: deletedUser,
+            })
+          );
+          res.end();
+        } else {
+          res.write(
+            JSON.stringify({
+              error: "User does not exist",
+            })
+          );
+          res.end();
+        }
+      }
+
+      main()
+        .catch((e) => console.error(e))
+        .finally(async () => {
+          await prisma.$disconnect();
+        });
+      return;
+    }
+    res.writeHead(401);
+    res.write(
+      JSON.stringify({
+        error: "Invalid session",
+      })
+    );
+    res.end();
+  },
 };
 
 export default UsersControllers;

@@ -1,9 +1,13 @@
 import http from "http";
 
 import User from "./routes/users.js";
+import CostCenter from "./routes/costCenters.js";
+import Departament from "./routes/departaments.js";
 
 const routes = {
   "/users/": User,
+  "/costCenters/": CostCenter,
+  "/departaments/": Departament,
 };
 
 /*
@@ -46,11 +50,11 @@ const httpServerFactory = () => {
       result.push(await observer(url, req, res));
     }
 
-    /**
+    
     console.log("result:", result);
     console.log('result.every:',result.every(element => element === null))
     console.log('result.length:',result.length)
-    */
+    
 
     if (result.every(element => element === false)) {
       res.writeHead(404);

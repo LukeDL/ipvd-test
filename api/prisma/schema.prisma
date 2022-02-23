@@ -7,6 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model CostCenters {
+  id           String   @id @default(uuid())
+  code         String?  @db.VarChar(255) @unique
+  name         String?  @db.VarChar(255)
+  address      String?  @db.VarChar(255)
+  createdAt    DateTime? @db.Timestamptz(6) @default(now())
+  updatedAt    DateTime? @db.Timestamptz(6) @default(now())
+  departaments Departaments[]
+}
+
+model Departaments {
+  id           String   @id @default(uuid())
+  name         String?  @db.VarChar(255) 
+  costCenterId String? @db.VarChar(255)
+  leaderId     String? @db.VarChar(255)
+  createdAt    DateTime? @db.Timestamptz(6) @default(now())
+  updatedAt    DateTime? @db.Timestamptz(6) @default(now())
+  costCenter   CostCenters? @relation(fields: [costCenterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users        Users[]
+}
+
+model Users {
+  uuid          String   @id @default(uuid())
+  firstName     String?  @db.VarChar(255)
+  lastName      String?  @db.VarChar(255)
+  email         String?  @db.VarChar(255) @unique
+  password      String?  @db.VarChar(255)
+  departamentId String?  @db.VarChar(255)
+  createdAt     DateTime?  @db.Timestamptz(6) @default(now())
+  updatedAt     DateTime?  @db.Timestamptz(6) @default(now())
+  departament   Departaments? @relation(fields: [departamentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sessions      Sessions[]
+}
+
 model Sessions {
   sessionId String   @id @default(uuid())
   userId    String?  @db.VarChar(255)
@@ -16,13 +50,3 @@ model Sessions {
   users     Users?   @relation(fields: [userId], references: [uuid], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model Users {
-  uuid      String     @id @default(uuid())
-  firstName String?    @db.VarChar(255)
-  lastName  String?    @db.VarChar(255)
-  email     String?    @db.VarChar(255)
-  password  String?    @db.VarChar(255)
-  createdAt DateTime?   @db.Timestamptz(6) @default(now())
-  updatedAt DateTime?   @db.Timestamptz(6) @default(now())
-  sessions  Sessions[]
-}

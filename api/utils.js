@@ -49,7 +49,10 @@ const utils = () => {
     const { PrismaClient } = Prisma;
     const prisma = new PrismaClient();
 
-    if (cookies.sessionId) {
+    console.log('cookies:', cookies)
+    console.log('cookies.session:', cookies.session)
+    
+    if (cookies && cookies.sessionId) {
 
       const sessionId = cookies.sessionId;
 
