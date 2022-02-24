@@ -25,6 +25,7 @@ const utils = () => {
     const cookies = {};
 
     if (req.headers.cookie) {
+      console.log('cookie loaded')
       req.headers.cookie.split(";").forEach((cookie) => {
         let [name, ...rest] = cookie.split("=");
 
@@ -40,6 +41,7 @@ const utils = () => {
       });
       return cookies;
     } else {
+      console.log('no cookie found')
       return null;
     }
   };

@@ -3,7 +3,7 @@ import utils from "../utils.js";
 
 const concat = utils().concatChunkData;
 
-const User = async (url, req, res) => {
+const User = async (url, req, res, headers) => {
   const routes = [
     { route: "/", method: "GET", controller: UsersControllers.controllerTest },
     { route: "/login", method: "POST", controller: UsersControllers.login },
@@ -42,11 +42,11 @@ const User = async (url, req, res) => {
             const cookies = utils().parseCookies(req);
             const data = await concat(req);
 
-            route.controller({ cookies, data }, res);
+            route.controller({ cookies, data }, res, headers);
             
           } else {
             const data = await concat(req);
-            route.controller(data, res);
+            route.controller(data, res, headers);
             
           }
 

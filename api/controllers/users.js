@@ -8,9 +8,11 @@ const UsersControllers = {
     res.end();
   },
 
-  login: (responseData, res) => {
+  login: (responseData, res, headers) => {
     const { PrismaClient } = Prisma;
     const prisma = new PrismaClient();
+
+    console.log('responseData:', responseData)
 
     const { email, password } = responseData.data;
 
@@ -45,7 +47,8 @@ const UsersControllers = {
              */
 
             res.writeHead(200, {
-              "Set-Cookie": `sessionId=${session.sessionId}; HttpOnly; Max-Age=3600; Path=/`, // 1 hour
+              ...headers,
+              "Set-Cookie": `sessionId=${session.sessionId}; Max-Age=3600; Path=/`, // 1 hour
               "Content-Type": "text/plain",
             });
 
@@ -81,14 +84,15 @@ const UsersControllers = {
       });
   },
 
-  protected: (responseData, res) => {
+  protected: (responseData, res, headers) => {
     if (utils().checkSession(responseData.cookies)) {
       console.log("responseData:", responseData);
 
+      res.writeHead(200, headers)
       res.write("Hello from the protected");
       res.end();
     } else {
-      res.writeHead(401);
+      res.writeHead(401, headers);
       res.write(
         JSON.stringify({
           error: "Invalid session",
@@ -126,7 +130,7 @@ const UsersControllers = {
               password: hashedPassword,
             },
           });
-
+          res.writeHead(200, headers)
           res.write(
             JSON.stringify({
               user: newUser,
@@ -150,7 +154,7 @@ const UsersControllers = {
         });
       return;
     }
-    res.writeHead(401);
+    res.writeHead(401, headers);
     res.write(
       JSON.stringify({
         error: "Invalid session",
@@ -196,7 +200,7 @@ const UsersControllers = {
             },
           },
         });
-
+        res.writeHead(200, headers)
         res.write(
           JSON.stringify({
             user,
@@ -212,7 +216,7 @@ const UsersControllers = {
         });
       return;
     }
-    res.writeHead(401);
+    res.writeHead(401, headers);
     res.write(
       JSON.stringify({
         error: "Invalid session",
@@ -248,7 +252,7 @@ const UsersControllers = {
             },
             data,
           });
-
+          res.writeHead(200, headers)
           res.write(
             JSON.stringify({
               user: updatedUser,
@@ -272,7 +276,7 @@ const UsersControllers = {
         });
       return;
     }
-    res.writeHead(401);
+    res.writeHead(401, headers);
     res.write(
       JSON.stringify({
         error: "Invalid session",
@@ -306,7 +310,7 @@ const UsersControllers = {
               uuid,
             },
           });
-
+          res.writeHead(200, headers)
           res.write(
             JSON.stringify({
               user: deletedUser,
@@ -330,7 +334,7 @@ const UsersControllers = {
         });
       return;
     }
-    res.writeHead(401);
+    res.writeHead(401, headers);
     res.write(
       JSON.stringify({
         error: "Invalid session",

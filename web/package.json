@@ -8,6 +8,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "axios": "^0.26.0",
     "dotenv": "^16.0.0",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
@@ -22,7 +23,6 @@
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^8.2.0",
     "prettier": "^2.5.1",
-    "sequelize-cli": "^6.4.1",
     "vite": "^2.7.13",
     "vue-cli-plugin-vuestic-ui": "~1.0.4"
   }
