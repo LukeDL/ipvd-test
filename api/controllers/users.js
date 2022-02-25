@@ -45,7 +45,7 @@ const UsersControllers = {
              * return the session id cookie
              *
              */
-
+            console.log('login headers:', headers)
             res.writeHead(200, {
               ...headers,
               "Set-Cookie": `sessionId=${session.sessionId}; Max-Age=3600; Path=/`, // 1 hour
@@ -54,7 +54,8 @@ const UsersControllers = {
 
             res.write(
               JSON.stringify({
-                session: session.sessionId,
+                session: { id: session.sessionId, expires: session.expires },
+                
               })
             );
             res.end();

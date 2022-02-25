@@ -3,7 +3,7 @@ import utils from "../utils.js";
 
 const concat = utils().concatChunkData;
 
-const Departament = async (url, req, res) => {
+const Departament = async (url, req, res, headers) => {
 
   const routes = [
       {
@@ -57,11 +57,11 @@ const Departament = async (url, req, res) => {
               const cookies = utils().parseCookies(req);
               const data = await concat(req);
 
-              route.controller({ cookies, ...data }, res);
+              route.controller({ cookies, ...data }, res, headers);
             } else {
               const data = await concat(req);
 
-              route.controller({ ...data }, res);
+              route.controller({ ...data }, res, headers);
             }
           }
         }
