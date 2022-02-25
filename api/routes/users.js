@@ -7,7 +7,12 @@ const User = async (url, req, res, headers) => {
   const routes = [
     { route: "/", method: "GET", controller: UsersControllers.controllerTest },
     { route: "/login", method: "POST", controller: UsersControllers.login },
-    { route: "/logout", method: "DELETE", controller: UsersControllers.logout, protected: true },
+    {
+      route: "/logout",
+      method: "DELETE",
+      controller: UsersControllers.logout,
+      protected: true,
+    },
     {
       route: "/protected",
       method: "POST",
@@ -15,8 +20,17 @@ const User = async (url, req, res, headers) => {
       protected: true,
     },
     {
-      route: "/getUser", method: "GET", controller: UsersControllers.getUser, protected: true,  
-    }
+      route: "/getUser",
+      method: "GET",
+      controller: UsersControllers.getUser,
+      protected: true,
+    },
+    {
+      route: "/findAllUsersWithDepartamentId",
+      method: "POST",
+      controller: UsersControllers.findAllUsersWithDepartamentId,
+      protected: true,
+    },
   ];
 
   function splitUrl(url, delimiter) {
@@ -44,15 +58,12 @@ const User = async (url, req, res, headers) => {
             const data = await concat(req);
 
             route.controller({ cookies, data }, res, headers);
-            
           } else {
             const data = await concat(req);
             route.controller(data, res, headers);
-            
           }
 
           return true;
-
         }
       }
     }

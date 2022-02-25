@@ -227,7 +227,7 @@ const UsersControllers = {
     res.end();
   },
 
-  getUser: (responseData, res) => {
+  getUser: (responseData, res, headers) => {
     /**
      * Use utils.checkSession to check if the user is logged in
      * and if the user is logged in, then get the user
@@ -289,7 +289,74 @@ const UsersControllers = {
     res.end();
   },
 
-  updateUser: (responseData, res) => {
+  findAllUsersWithDepartamentId: (responseData, res, headers) => {
+
+    /**
+     * Use utils.checkSession to check if the user is logged in
+     * and if the user is logged in, then get the all the users with the departament.id
+     */
+
+    if (utils().checkSession(responseData.cookies)) {
+      const { PrismaClient } = Prisma;
+      const prisma = new PrismaClient();
+
+      const { departamentId } = responseData.data;
+
+      async function main() {
+        const users = await prisma.Users.findMany({
+          where: {
+            departament: {
+              id: departamentId,
+            },
+          },
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+            createdAt: true,
+            updatedAt: true,
+            departament: {
+              select: {
+                id: true,
+                name: true,
+                costCenter: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+        res.writeHead(200, headers);
+        res.write(
+          JSON.stringify({
+            users,
+          })
+        );
+        res.end();
+      }
+
+      main()
+        .catch((e) => console.error(e))
+        .finally(async () => {
+          await prisma.$disconnect();
+        });
+      return;
+    }else{
+      res.writeHead(401, headers);
+      res.write(
+        JSON.stringify({
+          error: "Invalid session",
+        })
+      );
+      res.end();
+    }
+
+  },
+
+  updateUser: (responseData, res, headers) => {
     /**
      * Use utils.checkSession to check if the user is logged in
      * and if the user is logged in, then update the user with the
@@ -349,7 +416,7 @@ const UsersControllers = {
     res.end();
   },
 
-  deleteUser: (responseData, res) => {
+  deleteUser: (responseData, res, headers) => {
     /**
      * Use utils.checkSession to check if the user is logged in
      * and if the user is logged in, then delete the user
