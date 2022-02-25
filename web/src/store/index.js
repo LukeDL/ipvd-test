@@ -11,16 +11,21 @@ const store = createStore({
   },
   mutations: {
     setSession(state, data) {
-      console.log('setSession', data);
       state.session.id = data.id;
       state.session.expires = data.expires;
     },
+    endSession(state) {
+      state.session.id='';
+      state.session.expires=0;
+    }
   },
   actions: {
     createSession({ commit }, data) {
-      console.log("dispatching createSession:", data);
       commit("setSession", data);
     },
+    endSession({ commit }) {
+      commit("endSession");
+    }
   },
 });
 

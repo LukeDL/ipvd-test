@@ -12,7 +12,7 @@ const UsersControllers = {
     const { PrismaClient } = Prisma;
     const prisma = new PrismaClient();
 
-    console.log('responseData:', responseData)
+    console.log("responseData:", responseData);
 
     const { email, password } = responseData.data;
 
@@ -45,7 +45,7 @@ const UsersControllers = {
              * return the session id cookie
              *
              */
-            console.log('login headers:', headers)
+            console.log("login headers:", headers);
             res.writeHead(200, {
               ...headers,
               "Set-Cookie": `sessionId=${session.sessionId}; Max-Age=3600; Path=/`, // 1 hour
@@ -55,11 +55,15 @@ const UsersControllers = {
             res.write(
               JSON.stringify({
                 session: { id: session.sessionId, expires: session.expires },
-                
               })
             );
             res.end();
           } else {
+            res.writeHead(400, {
+              ...headers,
+
+              "Content-Type": "text/plain",
+            });
             res.write(
               JSON.stringify({
                 error: "Invalid username or password",
@@ -69,6 +73,11 @@ const UsersControllers = {
           res.end();
         });
       } else {
+        res.writeHead(400, {
+          ...headers,
+
+          "Content-Type": "text/plain",
+        });
         res.write(
           JSON.stringify({
             error: "Invalid username or password",
@@ -85,11 +94,65 @@ const UsersControllers = {
       });
   },
 
+  logout: (responseData, res, headers) => {
+    const { PrismaClient } = Prisma;
+    const prisma = new PrismaClient();
+
+    if (utils().checkSession(responseData.cookies)) {
+      /**
+       * load session data from db using Prisma
+       * and delete the session from the db
+       */
+
+      async function main() {
+        const session = await prisma.Sessions.findUnique({
+          where: {
+            sessionId: responseData.cookies.sessionId,
+          },
+        });
+
+        if (session) {
+          await prisma.Sessions.delete({
+            where: { sessionId: session.sessionId },
+          });
+          res.writeHead(200, {
+            ...headers,
+            "Set-Cookie": `sessionId=expired; Max-Age=0; Path=/`,
+            "Content-Type": "text/plain",
+          });
+          res.write(JSON.stringify({ message: "logged out" }));
+          res.end();
+        } else {
+          res.writeHead(400, {
+            ...headers,
+            "Content-Type": "text/plain",
+          });
+          res.write(JSON.stringify({ message: "session not found" }));
+          res.end();
+        }
+      }
+
+      main()
+        .catch((e) => console.error(e))
+        .finally(async () => {
+          await prisma.$disconnect();
+        });
+    } else {
+      res.writeHead(401, headers);
+      res.write(
+        JSON.stringify({
+          error: "Invalid session",
+        })
+      );
+      res.end();
+    }
+  },
+
   protected: (responseData, res, headers) => {
     if (utils().checkSession(responseData.cookies)) {
       console.log("responseData:", responseData);
 
-      res.writeHead(200, headers)
+      res.writeHead(200, headers);
       res.write("Hello from the protected");
       res.end();
     } else {
@@ -131,7 +194,7 @@ const UsersControllers = {
               password: hashedPassword,
             },
           });
-          res.writeHead(200, headers)
+          res.writeHead(200, headers);
           res.write(
             JSON.stringify({
               user: newUser,
@@ -201,7 +264,7 @@ const UsersControllers = {
             },
           },
         });
-        res.writeHead(200, headers)
+        res.writeHead(200, headers);
         res.write(
           JSON.stringify({
             user,
@@ -253,7 +316,7 @@ const UsersControllers = {
             },
             data,
           });
-          res.writeHead(200, headers)
+          res.writeHead(200, headers);
           res.write(
             JSON.stringify({
               user: updatedUser,
@@ -311,7 +374,7 @@ const UsersControllers = {
               uuid,
             },
           });
-          res.writeHead(200, headers)
+          res.writeHead(200, headers);
           res.write(
             JSON.stringify({
               user: deletedUser,

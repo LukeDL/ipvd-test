@@ -15,6 +15,30 @@ import {
 } from "naive-ui";
 </script>
 
+<script>
+import axios from "axios";
+
+export default {
+  methods: {
+    async logout() {
+      const response = await axios.delete(
+        "http://localhost:3000/users/logout",
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log('response', response);
+
+      if (response.status === 200) {
+        this.$store.dispatch("endSession");
+        this.$router.push("/login");
+      }
+    },
+  },
+};
+</script>
+
 <template>
   <n-layout>
     <n-layout-content>
@@ -49,7 +73,7 @@ import {
         </template>
         <template #avatar>
           <n-avatar
-            style="background-color: blue;"
+            style="background-color: blue"
             :size="32"
             src="https://www.ipdvonline.com.br/wp-content/uploads/2020/09/logo.png"
           ></n-avatar>
@@ -57,7 +81,7 @@ import {
         <template #extra>
           <n-space>
             <n-button type="primary">Importar</n-button>
-            <n-button type="error">Logout</n-button>
+            <n-button type="error" @click="logout">Logout</n-button>
           </n-space>
         </template>
         <template #footer> São Luís, 25 de fevereiro de 2022. </template>
@@ -68,7 +92,7 @@ import {
 
 <style scoped>
 .n-layout {
-  background: #FFF;
+  background: #fff;
   margin-left: 10em;
   margin-right: 10em;
 }

@@ -7,6 +7,7 @@ const User = async (url, req, res, headers) => {
   const routes = [
     { route: "/", method: "GET", controller: UsersControllers.controllerTest },
     { route: "/login", method: "POST", controller: UsersControllers.login },
+    { route: "/logout", method: "DELETE", controller: UsersControllers.logout, protected: true },
     {
       route: "/protected",
       method: "POST",
